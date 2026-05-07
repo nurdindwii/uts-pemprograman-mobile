@@ -1,30 +1,33 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:aplikasi_pertamaku2/main.dart';
+import '../lib/main.dart';// Ganti dengan nama project Anda
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Pengujian Tampilan dan Login Halaman Awal', (WidgetTester tester) async {
+    // 1. Jalankan aplikasi di lingkungan testing
+    const aplikasiPresensiUTS = const AplikasiPresensiUTS();
+    await tester.pumpWidget(aplikasiPresensiUTS);
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // 2. Pastikan teks "LOG IN UTS" ada di layar
+    expect(find.text('LOG IN UTS'), findsOneWidget);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    // 3. Pastikan ada tombol login
+    expect(find.text('LOGIN SEKARANG'), findsOneWidget);
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // 4. Simulasi mengetik NIM
+    await tester.enterText(find.byType(TextField).at(0), '20240001');
+    
+    // 5. Simulasi mengetik Password
+    await tester.enterText(find.byType(TextField).at(1), 'password123');
+
+    // 6. Klik tombol Login
+    await tester.tap(find.byType(ElevatedButton));
+    
+    // 7. Tunggu sampai animasi/transisi halaman selesai
+    await tester.pumpAndSettle();
+
+    // 8. Pastikan setelah login, kita berpindah ke halaman "Presensi Mahasiswa"
+    expect(find.text('Presensi Mahasiswa'), findsOneWidget);
   });
 }
+

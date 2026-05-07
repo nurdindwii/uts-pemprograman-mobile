@@ -1,115 +1,190 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
-}
+void main() => runApp(const AplikasiUTS());
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class AplikasiUTS extends StatelessWidget {
+  const AplikasiUTS({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
+      title: 'Presensi Mahasiswa',
       theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.indigo),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const HalamanLogin(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+// --- HALAMAN LOGIN ---
+class HalamanLogin extends StatefulWidget {
+  const HalamanLogin({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HalamanLogin> createState() => _HalamanLoginState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _HalamanLoginState extends State<HalamanLogin> {
+  final _nimController = TextEditingController();
+  final _passController = TextEditingController();
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
+  void _login() {
+    // Logika login sederhana untuk UTS
+    if (_nimController.text.isNotEmpty && _passController.text.isNotEmpty) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HalamanPresensi()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Harap isi NIM dan Password")),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      body: Padding(
+        padding: const EdgeInsets.all(25.0),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+          children: [
+            const Icon(Icons.school, size: 100, color: Colors.indigo),
+            const SizedBox(height: 20),
+            const Text("Login Mahasiswa",
+                style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 30),
+            TextField(
+              controller: _nimController,
+              decoration: const InputDecoration(
+                  labelText: 'NIM', border: OutlineInputBorder()),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
+            const SizedBox(height: 15),
+            TextField(
+              controller: _passController,
+              obscureText: true,
+              decoration: const InputDecoration(
+                  labelText: 'Password', border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 30),
+            SizedBox(
+              width: double.infinity,
+              height: 50,
+              child: ElevatedButton(
+                onPressed: _login,
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.indigo),
+                child:
+                    const Text("MASUK", style: TextStyle(color: Colors.white)),
+              ),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+// --- HALAMAN PRESENSI ---
+class HalamanPresensi extends StatefulWidget {
+  const HalamanPresensi({super.key});
+
+  @override
+  State<HalamanPresensi> createState() => _HalamanPresensiState();
+}
+
+class _HalamanPresensiState extends State<HalamanPresensi> {
+  // Data mahasiswa dengan status awal 'Belum diabsen'
+  final List<Map<String, dynamic>> _mahasiswa = [
+    {"nama": "Nurdin Dwi", "nim": "2024001", "status": "Masuk"},
+    {"nama": "Budi Raharjo", "nim": "2024002", "status": "Masuk"},
+    {"nama": "Siti Aminah", "nim": "2024003", "status": "Masuk"},
+    {"nama": "Andi Wijaya", "nim": "2024004", "status": "Masuk"},
+  ];
+
+  void _ubahStatus(int index, String statusBaru) {
+    setState(() {
+      _mahasiswa[index]['status'] = statusBaru;
+    });
+  }
+
+  Color _getWarna(String status) {
+    switch (status) {
+      case "Masuk":
+        return Colors.green;
+      case "Ijin":
+        return Colors.orange;
+      case "Tidak Masuk":
+        return Colors.red;
+      default:
+        return Colors.grey;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Daftar Kehadiran"),
+        backgroundColor: Colors.indigo,
+        foregroundColor: Colors.white,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => Navigator.pushReplacement(context,
+                MaterialPageRoute(builder: (context) => const HalamanLogin())),
+          )
+        ],
+      ),
+      body: ListView.builder(
+        itemCount: _mahasiswa.length,
+        itemBuilder: (context, index) {
+          return Card(
+            margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 8),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: CircleAvatar(
+                        backgroundColor:
+                            _getWarna(_mahasiswa[index]['status'])),
+                    title: Text(_mahasiswa[index]['nama'],
+                        style: const TextStyle(fontWeight: FontWeight.bold)),
+                    subtitle: Text(
+                        "NIM: ${_mahasiswa[index]['nim']} | Status: ${_mahasiswa[index]['status']}"),
+                  ),
+                  const Divider(),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      _tombolStatus(index, "Masuk", Colors.green),
+                      _tombolStatus(index, "Ijin", Colors.orange),
+                      _tombolStatus(index, "Tidak Masuk", Colors.red),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _tombolStatus(int index, String label, Color warna) {
+    return ElevatedButton(
+      onPressed: () => _ubahStatus(index, label),
+      style: ElevatedButton.styleFrom(
+        backgroundColor:
+            _mahasiswa[index]['status'] == label ? warna : Colors.grey[200],
+        foregroundColor:
+            _mahasiswa[index]['status'] == label ? Colors.white : Colors.black,
+      ),
+      child: Text(label, style: const TextStyle(fontSize: 12)),
     );
   }
 }
