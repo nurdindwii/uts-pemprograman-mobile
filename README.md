@@ -1,4 +1,4 @@
-# aplikasi_pertamaku2
+# aplikasi_presensi
 
 A new Flutter project.
 
